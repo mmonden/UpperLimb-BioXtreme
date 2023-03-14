@@ -1,19 +1,19 @@
 clear all
 format long e
 
-basePath = uigetdir
+basePath = uigetdir;
 %basePath = '/Users/matthiasmonden/Downloads/marketstand001/6_Market Stand_20220125164648_baseline';
-
-% dirList = dir(basePath);
-% direc = dirList(4).name	% Start vanaf 3 (. en .. zijn ook dirs)
+save_dir = uigetdir;
 
 atEnd = false;
-filenamesDone = [];
+filenamesDone = {};
 index = 3;
 figNumber = 1;
 
 delete(fullfile(basePath, "*.fig"))
 delete(fullfile(basePath, "*.xlsx"))
+delete(fullfile(save_dir, "*.fig"))
+delete(fullfile(save_dir, "*.xlsx"))
 
 targetReached_arr = [];
 reactionTime_arr = [];
@@ -62,7 +62,7 @@ while ~atEnd
 	movementTime = time(length(time)) / 1000;
 
 	fig_dist = plotPosition(time, x, y, z, orgX, orgY, orgZ, figNumber);
-	saveas(fig_dist, fullfile(basePath, file(1:length(file)-4)), 'fig')
+	saveas(fig_dist, fullfile(save_dir, file(1:length(file)-4)), 'fig')
 
 	%	Here we calculate the FM (First Movement) parameters
 	[initialDirectionAngle, initialDistanceRatio, initialSpeedRatio, totalDistance] = getFMParameters(time, x, y, z, orgX, orgY, orgZ, v);
@@ -94,36 +94,40 @@ while ~atEnd
 	maxSpeed_arr = [maxSpeed_arr maxSpeed];
 	avgDeviation_arr = [avgDeviation_arr averageDeviation];
 
-	filenamesDone = [filenamesDone; file];
+	filenamesDone{end+1} = file;
 	index = index + 1;
 	figNumber = figNumber + 1;
 end
 
 [path, filename, ext] = fileparts(basePath);
+path = save_dir;
 ext = ".xlsx";
-writematrix(targetReached_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "A2");
-writematrix(reactionTime_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "B2");
-writematrix(initialDirectionAngle_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "C2");
-writematrix(initialDistanceRatio_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "D2");
-writematrix(initialSpeedRatio_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "E2");
-writematrix(speedMaximaCount_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "F2");
-writematrix(minMaxSpeed_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "G2");
-writematrix(momementTime_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "H2");
-writematrix(pathLengthRatio_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "I2");
-writematrix(maxSpeed_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "J2");
-writematrix(avgDeviation_arr', fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "K2");
 
-writematrix("targetReached", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "A1");
-writematrix("reactionTime", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "B1");
-writematrix("initialDirectionAngle", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "C1");
-writematrix("initialDistanceRatio", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "D1");
-writematrix("initialSpeedRatio", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "E1");
-writematrix("speedMaximaCount", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "F1");
-writematrix("minMaxSpeed", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "G1");
-writematrix("momementTime", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "H1");
-writematrix("pathLengthRatio", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "I1");
-writematrix("maxSpeed", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "J1");
-writematrix("avgDeviation", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', "K1");
+writecell(filenamesDone', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "A2");
+writematrix(targetReached_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "B2");
+writematrix(reactionTime_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "C2");
+writematrix(initialDirectionAngle_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "D2");
+writematrix(initialDistanceRatio_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "E2");
+writematrix(initialSpeedRatio_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "F2");
+writematrix(speedMaximaCount_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "G2");
+writematrix(minMaxSpeed_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "H2");
+writematrix(momementTime_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "I2");
+writematrix(pathLengthRatio_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "J2");
+writematrix(maxSpeed_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "K2");
+writematrix(avgDeviation_arr', fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "L2");
+
+writematrix("fileName", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "A1");
+writematrix("targetReached", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "B1");
+writematrix("reactionTime", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "C1");
+writematrix("initialDirectionAngle", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "D1");
+writematrix("initialDistanceRatio", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "E1");
+writematrix("initialSpeedRatio", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "F1");
+writematrix("speedMaximaCount", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "G1");
+writematrix("minMaxSpeed", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
+writematrix("momementTime", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
+writematrix("pathLengthRatio", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
+writematrix("maxSpeed", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
+writematrix("avgDeviation", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "L1");
 
 avg = length(reactionTime_arr) + 2;
 
@@ -136,18 +140,18 @@ while index < length(minMaxSpeed_arr)
 	end
 end
 
-writematrix("Average", fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range', strcat("L", string(avg)));
-writematrix(sum(targetReached_arr)/length(targetReached_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("A", string(avg)));
-writematrix(sum(reactionTime_arr)/length(reactionTime_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("B", string(avg)));
-writematrix(sum(initialDirectionAngle_arr)/length(initialDirectionAngle_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("C", string(avg)));
-writematrix(sum(initialDistanceRatio_arr)/length(initialDistanceRatio_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("D", string(avg)));
-writematrix(sum(initialSpeedRatio_arr)/length(initialSpeedRatio_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("E", string(avg)));
-writematrix(sum(speedMaximaCount_arr)/length(speedMaximaCount_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("F", string(avg)));
-writematrix(sum(minMaxSpeed_arr)/length(minMaxSpeed_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("G", string(avg)));
-writematrix(sum(momementTime_arr)/length(momementTime_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("H", string(avg)));
-writematrix(sum(pathLengthRatio_arr)/length(pathLengthRatio_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("I", string(avg)));
-writematrix(sum(maxSpeed_arr)/length(maxSpeed_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("J", string(avg)));
-writematrix(sum(avgDeviation_arr)/length(avgDeviation_arr), fullfile(append(path, "/", filename), append(filename, ext)), 'Sheet', 1, 'Range',  strcat("K", string(avg)));
+writematrix("Average", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', strcat("M", string(avg)));
+writematrix(sum(targetReached_arr)/length(targetReached_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("B", string(avg)));
+writematrix(sum(reactionTime_arr)/length(reactionTime_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("C", string(avg)));
+writematrix(sum(initialDirectionAngle_arr)/length(initialDirectionAngle_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("D", string(avg)));
+writematrix(sum(initialDistanceRatio_arr)/length(initialDistanceRatio_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("E", string(avg)));
+writematrix(sum(initialSpeedRatio_arr)/length(initialSpeedRatio_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("F", string(avg)));
+writematrix(sum(speedMaximaCount_arr)/length(speedMaximaCount_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("G", string(avg)));
+writematrix(sum(minMaxSpeed_arr)/length(minMaxSpeed_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("H", string(avg)));
+writematrix(sum(momementTime_arr)/length(momementTime_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("I", string(avg)));
+writematrix(sum(pathLengthRatio_arr)/length(pathLengthRatio_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("J", string(avg)));
+writematrix(sum(maxSpeed_arr)/length(maxSpeed_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("K", string(avg)));
+writematrix(sum(avgDeviation_arr)/length(avgDeviation_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("L", string(avg)));
 
 function [timeData, xData, yData, zData, orgX, orgY, orgZ, endX, endY, endZ, supination, flexion, abduction, deviation, averageDeviation] = getdata(csvPath)
 	% Import raw csv file from robot.
