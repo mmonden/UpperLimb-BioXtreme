@@ -192,11 +192,11 @@ function [timeData, xData, yData, zData, orgX, orgY, orgZ, endX, endY, endZ, sup
 % dev = [];
 proj_vector = [endX; endY; endZ] - [startX; startY; startZ];
 for i=1:length(xData)
-data_vector = [xData(i); yData(i); zData(i)] - [startX; startY; startZ];
-proj = (data_vector' * proj_vector) / (proj_vector' * proj_vector) * proj_vector;
-vec = data_vector - proj;
-% dev = [dev; vec'];
-deviation = [deviation; norm(vec)];
+	data_vector = [xData(i); yData(i); zData(i)] - [startX; startY; startZ];
+	proj = (data_vector' * proj_vector) / (proj_vector' * proj_vector) * proj_vector;
+	vec = data_vector - proj;
+	% dev = [dev; vec'];
+	deviation = [deviation; norm(vec)];
 end
 % figure(1);
 % grid on

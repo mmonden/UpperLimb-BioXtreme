@@ -284,16 +284,14 @@ function [timeData, xData, yData, zData, orgX, orgY, orgZ, endX, endY, endZ, sup
 	supination = dataMatrix(:, 5);
 	flexion = dataMatrix(:, 6);
 	abduction = dataMatrix(:, 7);
-	deviation = dataMatrix(:, 8);
+	deviation = [];
 
-	% deviation(isnan(deviation)) = 0;
-	index = 1;
-	while index < 5
-		if isnan(deviation(index))
-			deviation = deviation(index+1:length(deviation));
-		else
-			index = index + 1;
-		end
+	proj_vector = [endX; endY; endZ] - [startX; startY; startZ];
+	for i=1:length(xData)
+		data_vector = [xData(i); yData(i); zData(i)] - [startX; startY; startZ];
+		proj = (data_vector' * proj_vector) / (proj_vector' * proj_vector) * proj_vector;
+		vec = data_vector - proj;
+		deviation = [deviation; norm(vec)];
 	end
 
 	averageDeviation = sum(deviation)/length(deviation);
