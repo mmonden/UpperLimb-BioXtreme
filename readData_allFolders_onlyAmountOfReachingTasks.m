@@ -2,9 +2,10 @@ clear all
 format long e
 
 basePath_dirs = uigetdir;
+save_dir = uigetdir;
 
 dirList = dir(basePath_dirs);
-delete(fullfile(basePath_dirs, "*.xlsx"))
+delete(fullfile(save_dir, "*.xlsx"))
 
 amount_of_reaching_tasks = [];
 
@@ -68,8 +69,8 @@ end
 filename = "averages_over_all_games";
 ext = ".xlsx";
 
-writematrix("amountOfReachingTasks", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "A1");
-writematrix(amount_of_reaching_tasks', fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "A2");
+writematrix("amountOfReachingTasks", fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', "A1");
+writematrix(amount_of_reaching_tasks', fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', "A2");
 
 avg_dirs = length(amount_of_reaching_tasks) + 3;
-writematrix(sum(amount_of_reaching_tasks)/length(amount_of_reaching_tasks), fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', strcat("A", string(avg_dirs)));
+writematrix(sum(amount_of_reaching_tasks), fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', strcat("A", string(avg_dirs)));
