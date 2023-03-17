@@ -2,7 +2,6 @@ clear all
 format long e
 
 basePath = uigetdir;
-%basePath = '/Users/matthiasmonden/Downloads/marketstand001/6_Market Stand_20220125164648_baseline';
 save_dir = uigetdir;
 
 atEnd = false;
@@ -187,17 +186,37 @@ function [timeData, xData, yData, zData, orgX, orgY, orgZ, endX, endY, endZ, sup
 	supination = dataMatrix(:, 5);
 	flexion = dataMatrix(:, 6);
 	abduction = dataMatrix(:, 7);
-	deviation = dataMatrix(:, 8);
+	% deviation = dataMatrix(:, 8);
+	deviation = [];
 
-	% deviation(isnan(deviation)) = 0;
-	index = 1;
-	while index < 5
-		if isnan(deviation(index))
-			deviation = deviation(index+1:length(deviation));
-		else
-			index = index + 1;
-		end
-	end
+% dev = [];
+proj_vector = [endX; endY; endZ] - [startX; startY; startZ];
+for i=1:length(xData)
+data_vector = [xData(i); yData(i); zData(i)] - [startX; startY; startZ];
+proj = (data_vector' * proj_vector) / (proj_vector' * proj_vector) * proj_vector;
+vec = data_vector - proj;
+% dev = [dev; vec'];
+deviation = [deviation; norm(vec)];
+end
+% figure(1);
+% grid on
+% axis equal
+% hold on
+% fig = plot3(xData, yData, zData, '-o', 'Color', 'b');
+% for i=1:length(dev(:, 1))
+% 	plot3([xData(i), xData(i) - dev(i, 1)], [yData(i), yData(i) - dev(i, 2)], [zData(i), zData(i) - dev(i, 3)], 'Color', 'r');
+% end
+% plot3(orgX, orgY, orgZ, '-o', 'Color', 'm');
+% hold off
+
+	% index = 1;
+	% while index < 5
+	% 	if isnan(deviation(index))
+	% 		deviation = deviation(index+1:length(deviation));
+	% 	else
+	% 		index = index + 1;
+	% 	end
+	% end
 
 	averageDeviation = sum(deviation)/length(deviation);
 end
