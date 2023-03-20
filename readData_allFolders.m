@@ -99,7 +99,7 @@ while ~atEnd_dirs
 
 		%	Here we calculate the FM (First Movement) parameters
 		[initialDirectionAngle, initialDistanceRatio, initialSpeedRatio, totalDistance] = getFMParameters(time, x, y, z, orgX, orgY, orgZ, v);
-		initialSpeedRatio = initialSpeedRatio * 100;
+		initialSpeedRatio = initialSpeedRatio;
 		pathLengthRatio = totalDistance/sqrt((orgX(2) - orgX(1))^2 + (orgY(2) - orgY(1))^2 + (orgZ(2) - orgZ(1))^2);
 
 		%	Now we calculate the CM (Corrective Movement) parameters
@@ -113,7 +113,7 @@ while ~atEnd_dirs
 		end
 
 		%	Here we calculate the reaction time (VR - Visual Reaction)
-		reactionTime = getReactionTime(time);
+		reactionTime = getReactionTime(time) / 1000;
 
 		targetReached_arr = [targetReached_arr targetReached];
 		reactionTime_arr = [reactionTime_arr reactionTime];
@@ -286,9 +286,9 @@ function [timeData, xData, yData, zData, orgX, orgY, orgZ, endX, endY, endZ, sup
 	abduction = dataMatrix(:, 7);
 	deviation = [];
 
-	proj_vector = [endX; endY; endZ] - [startX; startY; startZ];
+	proj_vector = [endX - startX; endY - startY; endZ - startZ];
 	for i=1:length(xData)
-		data_vector = [xData(i); yData(i); zData(i)] - [startX; startY; startZ];
+		data_vector = [xData(i) - startX; yData(i) - startY; zData(i) - startZ];
 		proj = (data_vector' * proj_vector) / (proj_vector' * proj_vector) * proj_vector;
 		vec = data_vector - proj;
 		deviation = [deviation; norm(vec)];

@@ -65,7 +65,7 @@ while ~atEnd
 
 	%	Here we calculate the FM (First Movement) parameters
 	[initialDirectionAngle, initialDistanceRatio, initialSpeedRatio, totalDistance] = getFMParameters(time, x, y, z, orgX, orgY, orgZ, v);
-	initialSpeedRatio = initialSpeedRatio * 100;
+	initialSpeedRatio = initialSpeedRatio;
 	pathLengthRatio = totalDistance/sqrt((orgX(2) - orgX(1))^2 + (orgY(2) - orgY(1))^2 + (orgZ(2) - orgZ(1))^2);
 
 	%	Now we calculate the CM (Corrective Movement) parameters
@@ -79,7 +79,7 @@ while ~atEnd
 	end
 
 	%	Here we calculate the reaction time (VR - Visual Reaction)
-	reactionTime = getReactionTime(time);
+	reactionTime = getReactionTime(time) / 1000;
 
 	targetReached_arr = [targetReached_arr targetReached];
 	reactionTime_arr = [reactionTime_arr reactionTime];
@@ -128,7 +128,7 @@ writematrix("pathLengthRatio [.]", fullfile(path, append(filename, ext)), 'Sheet
 writematrix("maxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
 writematrix("avgDeviation", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "L1");
 
-avg = length(reactionTime_arr) + 2;
+avg = length(reactionTime_arr) + 3;
 
 index = 1;
 while index < length(minMaxSpeed_arr)
@@ -151,6 +151,7 @@ writematrix(sum(momementTime_arr)/length(momementTime_arr), fullfile(path, appen
 writematrix(sum(pathLengthRatio_arr)/length(pathLengthRatio_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("J", string(avg)));
 writematrix(sum(maxSpeed_arr)/length(maxSpeed_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("K", string(avg)));
 writematrix(sum(avgDeviation_arr)/length(avgDeviation_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("L", string(avg)));
+writematrix(length(avgDeviation_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("A", string(avg)));
 
 function [timeData, xData, yData, zData, orgX, orgY, orgZ, endX, endY, endZ, supination, flexion, abduction, deviation, averageDeviation] = getdata(csvPath)
 	% Import raw csv file from robot.
@@ -190,9 +191,9 @@ function [timeData, xData, yData, zData, orgX, orgY, orgZ, endX, endY, endZ, sup
 	deviation = [];
 
 % dev = [];
-proj_vector = [endX; endY; endZ] - [startX; startY; startZ];
+proj_vector = [endX - startX; endY - startY; endZ - startZ];
 for i=1:length(xData)
-	data_vector = [xData(i); yData(i); zData(i)] - [startX; startY; startZ];
+	data_vector = [xData(i) - startX; yData(i) - startY; zData(i) - startZ];
 	proj = (data_vector' * proj_vector) / (proj_vector' * proj_vector) * proj_vector;
 	vec = data_vector - proj;
 	% dev = [dev; vec'];
