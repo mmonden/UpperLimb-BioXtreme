@@ -42,7 +42,7 @@ while ~atEnd
 	[time, x, y, z, orgX, orgY, orgZ, endX, endY, endZ, supination, flexion, abduction, deviation, averageDeviation] = getdata(append(basePath, "/", file));
 
 	%	Here the NT (No Trial) parameter is calculated
-	targetReached = hasReachedTarget(x, y, z, endX, endY, endZ);
+	targetReached = hasReachedTarget(x, y, z, endX, endY, endZ, averageDeviation);
 
 	%	Here we calculate the velocities and accelerations TM (Total Movement) parameters
 	[vx, vy, vz] = calculateAvgSpeed(time, x, y, z);
@@ -371,34 +371,24 @@ function [angle, distanceRatio, speedRatio, totalDistance] = getFMParameters(tim
 	angle = acos(dot(firstTrajectory, path)/(norm(firstTrajectory)*norm(path)));
 
 	%	Speed ratio calculation
-	initialMaxSpeed = 0;
-	[ttmin, min_, ttmax, max_] = getMin(1, time, velocity);
+	maxima = islocalmax(velocity);
+	index = 1;
 
-	if ttmax(1) < ttmin(1)
-		initialMaxSpeed = max_(1);
-	elseif ttmax(1) > ttmin(1)
-		index = 1;
-		initialMaxSpeed = 0;
-
-		while initialMaxSpeed == 0
-			initialMaxSpeed = velocity(index);
-			index = index + 1;
-		end
+	while maxima(index) ~= 1
+		index = index + 1;
 	end
 
-	speedRatio = initialMaxSpeed/max(velocity);
+	speedRatio = velocity(index)/max(velocity);
 
 	%	Distance ration calculation
 	firstStageDistance = 0;
 	totalDistance = 0;
 
-	index = 2;
-	while true
-		firstStageDistance = firstStageDistance + sqrt((x(index) - x(index-1))^2 + (y(index) - y(index-1))^2 + (z(index) - z(index-1))^2);
+	minima = islocalmin(velocity);
 
-		if(ttmin(2) == time(index))
-			break;
-		end
+	index = 2;
+	while ~minima(index)
+		firstStageDistance = firstStageDistance + sqrt((x(index) - x(index-1))^2 + (y(index) - y(index-1))^2 + (z(index) - z(index-1))^2);
 
 		index = index + 1;
 	end
@@ -410,8 +400,8 @@ function [angle, distanceRatio, speedRatio, totalDistance] = getFMParameters(tim
 	distanceRatio = firstStageDistance/totalDistance;
 end
 
-function [reached] = hasReachedTarget(x, y, z, endX, endY, endZ)
-	if (x(length(x)) == endX) & (y(length(x)) == endY) & (z(length(x)) == endZ)
+function [reached] = hasReachedTarget(x, y, z, endX, endY, endZ, dev)
+	if ((x(length(x)) >= endX - dev) & (x(length(x)) <= endX + dev)) & ((y(length(x)) >= endY - dev) & (y(length(x)) <= endY + dev)) & ((z(length(x)) >= endZ - dev) & (z(length(x)) <= endZ + dev))
 		reached = true;
 	end
 

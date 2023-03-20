@@ -5,13 +5,16 @@ basePath_dirs = uigetdir;
 save_dir = uigetdir;
 
 dirList = dir(basePath_dirs);
-delete(fullfile(save_dir, "*.xlsx"))
 
-amount_of_reaching_tasks = [];
+amount_of_reaching_tasks_MS = [];
+amount_of_reaching_tasks_Alch = [];
 
 atEnd_dirs = false;
-foldernamesDone = [];
-index_dirs = 4;
+foldernamesDone = {};
+index_dirs = 3;
+
+alch = "Alchemist"
+ms = "Market Stand"
 
 while ~atEnd_dirs
 	if length(dirList) < index_dirs
@@ -29,13 +32,8 @@ while ~atEnd_dirs
 	end
 
 	atEnd = false;
-	filenamesDone = [];
 	index = 3;
-
 	amount_of_files = 0;
-
-	% delete(fullfile(basePath, "*.fig"))
-	delete(fullfile(basePath, "*.xlsx"))
 
 	while ~atEnd
 		fileList = dir(basePath);
@@ -46,8 +44,6 @@ while ~atEnd_dirs
 		end
 
 		file = fileList(index).name;
-
-		%	Check if file is already done OR if it is the baseline
 		[filepath, name, ext] = fileparts(file);
 
 		if ext ~= ".csv"
@@ -55,22 +51,28 @@ while ~atEnd_dirs
 			continue
 		end
 
-		filenamesDone = [filenamesDone, file];
 		index = index + 1;
 		amount_of_files = amount_of_files + 1;
 	end
 
-	amount_of_reaching_tasks = [amount_of_reaching_tasks, amount_of_files];
-
-	foldernamesDone = [foldernamesDone, dirList(index_dirs).name];
+	if contains(dirList(index_dirs).name, ms)
+		amount_of_reaching_tasks_MS = [amount_of_reaching_tasks_MS, amount_of_files];
+		amount_of_reaching_tasks_Alch = [amount_of_reaching_tasks_Alch, 0];
+	elseif contains(dirList(index_dirs).name, alch)
+		amount_of_reaching_tasks_MS = [amount_of_reaching_tasks_MS, 0];
+		amount_of_reaching_tasks_Alch = [amount_of_reaching_tasks_Alch, amount_of_files];
+	end
+	
+	foldernamesDone{end+1} = dirList(index_dirs).name;
 	index_dirs = index_dirs + 1;
 end
 
-filename = "averages_over_all_games";
+filename = "movement_counts";
 ext = ".xlsx";
 
-writematrix("amountOfReachingTasks", fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', "A1");
-writematrix(amount_of_reaching_tasks', fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', "A2");
-
-avg_dirs = length(amount_of_reaching_tasks) + 3;
-writematrix(sum(amount_of_reaching_tasks), fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', strcat("A", string(avg_dirs)));
+writematrix("folderName", fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range',  "A1");
+writematrix("amountOfReachingTasks_MS", fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', "B1");
+writematrix("amountOfReachingTasks_Alch", fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', "C1");
+writecell(foldernamesDone', fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range',  "A2");
+writematrix(amount_of_reaching_tasks_MS', fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', "B2");
+writematrix(amount_of_reaching_tasks_Alch', fullfile(save_dir, append(filename, ext)), 'Sheet', 1, 'Range', "C2");

@@ -79,7 +79,7 @@ while ~atEnd_dirs
 		[time, x, y, z, orgX, orgY, orgZ, endX, endY, endZ, supination, flexion, abduction, deviation, averageDeviation] = getdata(append(basePath, "/", file));
 
 		%	Here the NT (No Trial) parameter is calculated
-		targetReached = hasReachedTarget(x, y, z, endX, endY, endZ);
+		targetReached = hasReachedTarget(x, y, z, endX, endY, endZ, averageDeviation);
 
 		%	Here we calculate the velocities and accelerations TM (Total Movement) parameters
 		[vx, vy, vz] = calculateAvgSpeed(time, x, y, z);
@@ -161,7 +161,7 @@ while ~atEnd_dirs
 	avg = length(reactionTime_arr) + 3;
 
 	index = 1;
-	while index < length(minMaxSpeed_arr)
+	while index <= length(minMaxSpeed_arr)
 		if minMaxSpeed_arr(index) == -1
 			minMaxSpeed_arr = [minMaxSpeed_arr(1:index-1), minMaxSpeed_arr(index+1:length(minMaxSpeed_arr))];
 		else
@@ -181,6 +181,7 @@ while ~atEnd_dirs
 	writematrix(sum(pathLengthRatio_arr)/length(pathLengthRatio_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("J", string(avg)));
 	writematrix(sum(maxSpeed_arr)/length(maxSpeed_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("K", string(avg)));
 	writematrix(sum(avgDeviation_arr)/length(avgDeviation_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("L", string(avg)));
+	writematrix(length(avgDeviation_arr), fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range',  strcat("A", string(avg)));
 
 	targetReached_avg = [targetReached_avg, sum(targetReached_arr)/length(targetReached_arr)];
 	reactionTime_avg = [reactionTime_avg, sum(reactionTime_arr)/length(reactionTime_arr)];
@@ -243,7 +244,6 @@ writematrix(sum(pathLengthRatio_avg)/length(pathLengthRatio_avg), fullfile(baseP
 writematrix(sum(maxSpeed_avg)/length(maxSpeed_avg), fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', strcat("K", string(avg_dirs)));
 writematrix(sum(avgDeviation_avg)/length(avgDeviation_avg), fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', strcat("L", string(avg_dirs)));
 writematrix(sum(amount_of_reaching_tasks), fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', strcat("M", string(avg_dirs)));
-
 
 function [timeData, xData, yData, zData, orgX, orgY, orgZ, endX, endY, endZ, supination, flexion, abduction, deviation, averageDeviation] = getdata(csvPath)
 	% Import raw csv file from robot.
@@ -341,7 +341,7 @@ function [accX, accY, accZ] = calculateAvgAccel(timeData, xSpeed, ySpeed, zSpeed
 end
 
 function [spMaxCnt] = getSpeedMaxCnt(v)
-	spMaxCnt = sum(islocalmax(v))
+	spMaxCnt = sum(islocalmax(v));
 end
 
 function [mmSpeed] = getMinMaxSpeed(time, v)
@@ -420,34 +420,24 @@ function [angle, distanceRatio, speedRatio, totalDistance] = getFMParameters(tim
 	angle = acos(dot(firstTrajectory, path)/(norm(firstTrajectory)*norm(path)));
 
 	%	Speed ratio calculation
-	initialMaxSpeed = 0;
-	[ttmin, min_, ttmax, max_] = getMin(1, time, velocity);
+	maxima = islocalmax(velocity);
+	index = 1;
 
-	if ttmax(1) < ttmin(1)
-		initialMaxSpeed = max_(1);
-	elseif ttmax(1) > ttmin(1)
-		index = 1;
-		initialMaxSpeed = 0;
-
-		while initialMaxSpeed == 0
-			initialMaxSpeed = velocity(index);
-			index = index + 1;
-		end
+	while maxima(index) ~= 1
+		index = index + 1;
 	end
 
-	speedRatio = initialMaxSpeed/max(velocity);
+	speedRatio = velocity(index)/max(velocity);
 
 	%	Distance ration calculation
 	firstStageDistance = 0;
 	totalDistance = 0;
 
-	index = 2;
-	while true
-		firstStageDistance = firstStageDistance + sqrt((x(index) - x(index-1))^2 + (y(index) - y(index-1))^2 + (z(index) - z(index-1))^2);
+	minima = islocalmin(velocity);
 
-		if(ttmin(2) == time(index))
-			break;
-		end
+	index = 2;
+	while ~minima(index)
+		firstStageDistance = firstStageDistance + sqrt((x(index) - x(index-1))^2 + (y(index) - y(index-1))^2 + (z(index) - z(index-1))^2);
 
 		index = index + 1;
 	end
@@ -459,8 +449,8 @@ function [angle, distanceRatio, speedRatio, totalDistance] = getFMParameters(tim
 	distanceRatio = firstStageDistance/totalDistance;
 end
 
-function [reached] = hasReachedTarget(x, y, z, endX, endY, endZ)
-	if (x(length(x)) == endX) & (y(length(x)) == endY) & (z(length(x)) == endZ)
+function [reached] = hasReachedTarget(x, y, z, endX, endY, endZ, dev)
+	if ((x(length(x)) >= endX - dev) & (x(length(x)) <= endX + dev)) & ((y(length(x)) >= endY - dev) & (y(length(x)) <= endY + dev)) & ((z(length(x)) >= endZ - dev) & (z(length(x)) <= endZ + dev))
 		reached = true;
 	end
 
