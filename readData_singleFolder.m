@@ -64,7 +64,7 @@ while ~atEnd
 	pathLengthRatio = totalDistance/sqrt((orgX(2) - orgX(1))^2 + (orgY(2) - orgY(1))^2 + (orgZ(2) - orgZ(1))^2);
 
 	%	Now we calculate the CM (Corrective Movement) parameters
-	speedMaximaCount = getSpeedMaxCnt(a);
+	speedMaximaCount = getSpeedMaxCnt(v);
 	sp = getMinMaxSpeed(time, v);
 
 	if sp ~= -1
@@ -74,7 +74,7 @@ while ~atEnd
 	end
 
 	%	Here we calculate the reaction time (VR - Visual Reaction)
-	reactionTime = getReactionTime(time);
+	reactionTime = getReactionTime(time) / 1000;
 
 	targetReached_arr = [targetReached_arr targetReached];
 	reactionTime_arr = [reactionTime_arr reactionTime];
@@ -121,7 +121,7 @@ writematrix("minMaxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet',
 writematrix("momementTime [s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
 writematrix("pathLengthRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
 writematrix("maxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
-writematrix("avgDeviation", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "L1");
+writematrix("avgDeviation [m]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "L1");
 
 avg = length(reactionTime_arr) + 3;
 
@@ -291,32 +291,8 @@ function [fig] = plotPosition(time, x, y, z, orgX, orgY, orgZ, num)
 	legend('Patients trajectory', 'Correct trajectory')
 end
 
-function [spMaxCnt] = getSpeedMaxCnt(a)
-	currentMinima = a(1);
-	currentMaxima = a(1);
-	minimaReached = false;
-
-	maxima = [];
-
-	for index=2:1:length(a)
-		if (a(index) < currentMinima) & (minimaReached == false)
-			currentMinima = a(index);
-		elseif (a(index) > currentMaxima) & (minimaReached == true)
-			currentMaxima = a(index);
-		end
-		
-		if (a(index) > currentMinima) & (minimaReached == false) & (index ~= 1)
-			currentMaxima = currentMinima;
-			minimaReached = true;
-		elseif (a(index) < currentMaxima) & (minimaReached == true) & (index ~= 1)
-			maxima = [maxima currentMaxima];
-
-			currentMinima = currentMaxima;
-			minimaReached = false;
-		end
-	end
-
-	spMaxCnt = length(maxima);
+function [spMaxCnt] = getSpeedMaxCnt(v)
+	spMaxCnt = sum(islocalmax(v));
 end
 
 function [mmSpeed] = getMinMaxSpeed(time, v)
@@ -443,8 +419,5 @@ function [reached] = hasReachedTarget(x, y, z, endX, endY, endZ)
 end
 
 function [reactTime] = getReactionTime(time)
-	reactTime = time(2) / 1000;
+	reactTime = time(2) * 1000;
 end
-
-% deviation
-% Overlap same trajectories of different days
