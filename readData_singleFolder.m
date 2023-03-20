@@ -9,11 +9,6 @@ filenamesDone = {};
 index = 3;
 figNumber = 1;
 
-delete(fullfile(basePath, "*.fig"))
-delete(fullfile(basePath, "*.xlsx"))
-delete(fullfile(save_dir, "*.fig"))
-delete(fullfile(save_dir, "*.xlsx"))
-
 targetReached_arr = [];
 reactionTime_arr = [];
 initialDirectionAngle_arr = [];
