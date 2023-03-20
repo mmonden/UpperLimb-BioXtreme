@@ -93,7 +93,7 @@ while ~atEnd_dirs
 		v = sqrt(vx.^2 + vy.^2 + vz.^2);
 		a = sqrt(ax.^2 + ay.^2 + az.^2);
 
-		maxSpeed = max(v) * 100;
+		maxSpeed = max(v);
 		% pathLengthRatio is calculated at the FM parameters
 		movementTime = time(length(time)) / 1000;
 
@@ -152,15 +152,15 @@ while ~atEnd_dirs
 
 	writematrix("fileNames", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "A1");
 	writematrix("targetReached", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "B1");
-	writematrix("reactionTime", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "C1");
-	writematrix("initialDirectionAngle", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "D1");
-	writematrix("initialDistanceRatio", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "E1");
-	writematrix("initialSpeedRatio", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "F1");
-	writematrix("speedMaximaCount", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "G1");
-	writematrix("minMaxSpeed", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
-	writematrix("momementTime", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
-	writematrix("pathLengthRatio", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
-	writematrix("maxSpeed", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
+	writematrix("reactionTime [s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "C1");
+	writematrix("initialDirectionAngle [rad]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "D1");
+	writematrix("initialDistanceRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "E1");
+	writematrix("initialSpeedRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "F1");
+	writematrix("speedMaximaCount [#]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "G1");
+	writematrix("minMaxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
+	writematrix("momementTime [s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
+	writematrix("pathLengthRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
+	writematrix("maxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
 	writematrix("avgDeviation", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "L1");
 
 	avg = length(reactionTime_arr) + 3;
@@ -209,17 +209,17 @@ ext = ".xlsx";
 
 writematrix("folderNames", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "A1");
 writematrix("targetReached", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "B1");
-writematrix("reactionTime", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "C1");
-writematrix("initialDirectionAngle", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "D1");
-writematrix("initialDistanceRatio", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "E1");
-writematrix("initialSpeedRatio", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "F1");
-writematrix("speedMaximaCount", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "G1");
-writematrix("minMaxSpeed", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
-writematrix("momementTime", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
-writematrix("pathLengthRatio", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
-writematrix("maxSpeed", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
+writematrix("reactionTime [s]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "C1");
+writematrix("initialDirectionAngle [rad]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "D1");
+writematrix("initialDistanceRatio [.]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "E1");
+writematrix("initialSpeedRatio [.]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "F1");
+writematrix("speedMaximaCount [#]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "G1");
+writematrix("minMaxSpeed [m/s]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
+writematrix("momementTime [s]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
+writematrix("pathLengthRatio [.]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
+writematrix("maxSpeed [m/s]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
 writematrix("avgDeviation", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "L1");
-writematrix("amountOfReachingTasks", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "M1");
+writematrix("amountOfReachingTasks [#]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "M1");
 
 writecell(foldernamesDone', fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "A2");
 writematrix(targetReached_avg', fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "B2");
@@ -446,7 +446,7 @@ function [angle, distanceRatio, speedRatio, totalDistance] = getFMParameters(tim
 	%	Initial angle calculation
 	firstTrajectory = [x(2) - x(1); y(2) - y(1); z(2) - z(1)];
 	path = [orgX(2) - orgX(1); orgY(1); orgZ(2) - orgZ(1)];
-	angle = radtodeg(acos(dot(firstTrajectory, path)/(norm(firstTrajectory)*norm(path))));
+	angle = acos(dot(firstTrajectory, path)/(norm(firstTrajectory)*norm(path)));
 
 	%	Speed ratio calculation
 	initialMaxSpeed = 0;
@@ -497,7 +497,7 @@ function [reached] = hasReachedTarget(x, y, z, endX, endY, endZ)
 end
 
 function [reactTime] = getReactionTime(time)
-	reactTime = time(2);
+	reactTime = time(2) * 1000;
 end
 
 % TODO: Overlap same trajectories of different days
