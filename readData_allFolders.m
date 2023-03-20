@@ -46,9 +46,6 @@ while ~atEnd_dirs
 
 	amount_of_files = 0;
 
-	% delete(fullfile(basePath, "*.fig"))
-	delete(fullfile(basePath, "*.xlsx"))
-
 	targetReached_arr = [];
 	reactionTime_arr = [];
 	initialDirectionAngle_arr = [];
@@ -111,7 +108,7 @@ while ~atEnd_dirs
 		end
 
 		%	Here we calculate the reaction time (VR - Visual Reaction)
-		reactionTime = getReactionTime(time) / 1000;
+		reactionTime = getReactionTime(time);
 
 		targetReached_arr = [targetReached_arr targetReached];
 		reactionTime_arr = [reactionTime_arr reactionTime];
@@ -495,7 +492,7 @@ function [reached] = hasReachedTarget(x, y, z, endX, endY, endZ)
 end
 
 function [reactTime] = getReactionTime(time)
-	reactTime = time(2) * 1000;
+	reactTime = time(2) / 1000;
 end
 
 % TODO: Overlap same trajectories of different days
