@@ -6,8 +6,6 @@ basePath_dirs = uigetdir;
 save_dir = uigetdir;
 
 dirList = dir(basePath_dirs);
-delete(fullfile(basePath_dirs, "*.xlsx"))
-delete(fullfile(save_dir, "*.xlsx"))
 
 targetReached_avg = [];
 reactionTime_avg = [];
