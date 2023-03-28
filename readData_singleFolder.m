@@ -2,7 +2,7 @@ clear all
 format long e
 
 basePath = uigetdir;
-save_dir = uigetdir;
+save_dir = basePath_dirs; %uigetdir;
 
 atEnd = false;
 filenamesDone = {};
@@ -65,7 +65,7 @@ while ~atEnd
 
 	%	Now we calculate the CM (Corrective Movement) parameters
 	speedMaximaCount = getSpeedMaxCnt(v);
-	sp = getMinMaxSpeed(time, v);
+	sp = abs(a);%getMinMaxSpeed(time, v);
 
 	if sp ~= -1
 		minMaxSpeed = sum(sp)/length(sp);
@@ -117,7 +117,7 @@ writematrix("initialDirectionAngle [rad]", fullfile(path, append(filename, ext))
 writematrix("initialDistanceRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "E1");
 writematrix("initialSpeedRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "F1");
 writematrix("speedMaximaCount [#]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "G1");
-writematrix("minMaxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
+writematrix("acceleration [m/s^2]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
 writematrix("momementTime [s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
 writematrix("pathLengthRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
 writematrix("maxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
@@ -295,74 +295,43 @@ function [spMaxCnt] = getSpeedMaxCnt(v)
 	spMaxCnt = sum(islocalmax(v));
 end
 
-function [mmSpeed] = getMinMaxSpeed(time, v)
-	maxSpeed = max(v);
-	indexMaxSpeed = 0;
+% function [mmSpeed] = getMinMaxSpeed(time, v)
+% 	startIndex = 0;
 
-	mmSpeed = [];
+% 	for index = 1:length(v)
+% 		if v(index) == max(v)
+% 			startIndex = index;
+% 		end
+% 	end
 
-	for index=1:1:length(time)
-		if v(index) == maxSpeed
-			indexMaxSpeed = index;
-		end
-	end
+% 	v = v(index:end);
 
-	[ttmin, min_, ttmax, max_] = getMin(indexMaxSpeed, time, v);
+% 	maxSpeed = v(islocalmax(v));
+% 	minSpeed = v(islocalmin(v));
 
-	if length(ttmin) ~= 0
-		if length(ttmin) > length(ttmax)
-			for index=1:1:length(ttmax)
-				mmSpeed = [mmSpeed abs(min_(index) - max_(index)) abs(min_(index + 1) - max_(index))];
-			end
-		elseif length(ttmin) < length(ttmax)
-			for index=1:1:length(ttmin)
-				mmSpeed = [mmSpeed abs(max_(index) - min_(index)) abs(max_(index + 1) - min_(index))];
-			end
-		else
-			for index=1:1:(length(ttmin) - 1)
-				mmSpeed = [mmSpeed abs(max_(index) - min_(index)) abs(max_(index + 1) - min_(index))];
-			end
+% 	mmSpeed = [];
 
-			index = length(ttmin);
-			mmSpeed = [mmSpeed abs(max_(index) - min_(index))];
-		end
-	else
-		mmSpeed = -1;
-	end
-end
+% 	maxFirst = false;
 
-function [timeToMinima, minima, timeToMaxima, maxima] = getMin(startIndex, time, v)
-	currentMinima = v(startIndex);
-	currentMaxima = v(startIndex);
-	minimaReached = false;
+% 	for index=1:length(v)
+% 		if islocalmax(v)(index) == 1
+% 			maxFirst = true;
+% 			break;
+% 		end
 
-	minima = [];
-	maxima = [];
-	timeToMinima = [];
-	timeToMaxima = [];	
+% 		if islocalmin(v)(index) == 1
+% 			break;
+% 		end
+% 	end
 
-	for index=startIndex+1:1:length(time)
-		if (v(index) < currentMinima) & (minimaReached == false)
-			currentMinima = v(index);
-		elseif (v(index) > currentMaxima) & (minimaReached == true)
-			currentMaxima = v(index);
-		end
-		
-		if (v(index) > currentMinima) & (minimaReached == false) & (index ~= startIndex)
-			minima = [minima currentMinima];
-			timeToMinima = [timeToMinima time(index)];
+% 	if maxFirst
+% 		for index=1:length(maxSpeed)
 
-			currentMaxima = currentMinima;
-			minimaReached = true;
-		elseif (v(index) < currentMaxima) & (minimaReached == true) & (index ~= startIndex)
-			maxima = [maxima currentMaxima];
-			timeToMaxima = [timeToMaxima time(index)];
+% 		end
+% 	else
 
-			currentMinima = currentMaxima;
-			minimaReached = false;
-		end
-	end
-end
+% 	end
+% end
 
 function [angle, distanceRatio, speedRatio, totalDistance] = getFMParameters(time, x, y, z, orgX, orgY, orgZ, velocity)
 	%	Initial angle calculation
@@ -386,9 +355,11 @@ function [angle, distanceRatio, speedRatio, totalDistance] = getFMParameters(tim
 
 	minima = islocalmin(velocity);
 
+	a = 1
+
 	index = 2;
 	while ~minima(index)
-		firstStageDistance = firstStageDistance + sqrt((x(index) - x(index-1))^2 + (y(index) - y(index-1))^2 + (z(index) - z(index-1))^2);
+		firstStageDistance = firstStageDistance + sqrt((x(index) - x(index-1))^2 + (y(index) - y(index-1))^2 + (z(index) - z(index-1))^2)
 
 		index = index + 1;
 	end

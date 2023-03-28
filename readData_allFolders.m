@@ -3,7 +3,7 @@ format long e
 
 basePath_dirs = uigetdir;
 % basePath_dirs = '/Users/matthiasmonden/Downloads/deXtreme_pilot_001/001-noBX-Alch';
-save_dir = uigetdir;
+save_dir = basePath_dirs;%uigetdir;
 
 dirList = dir(basePath_dirs);
 
@@ -99,7 +99,7 @@ while ~atEnd_dirs
 
 		%	Now we calculate the CM (Corrective Movement) parameters
 		speedMaximaCount = getSpeedMaxCnt(v);
-		sp = getMinMaxSpeed(time, v);
+		sp = a;% getMinMaxSpeed(time, v);
 
 		if sp ~= -1
 			minMaxSpeed = sum(sp)/length(sp);
@@ -152,7 +152,7 @@ while ~atEnd_dirs
 	writematrix("initialDistanceRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "E1");
 	writematrix("initialSpeedRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "F1");
 	writematrix("speedMaximaCount [#]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "G1");
-	writematrix("minMaxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
+	writematrix("acceleration [m/s^2]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
 	writematrix("momementTime [s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
 	writematrix("pathLengthRatio [.]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
 	writematrix("maxSpeed [m/s]", fullfile(path, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
@@ -210,7 +210,7 @@ writematrix("initialDirectionAngle [rad]", fullfile(basePath_dirs, append(filena
 writematrix("initialDistanceRatio [.]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "E1");
 writematrix("initialSpeedRatio [.]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "F1");
 writematrix("speedMaximaCount [#]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "G1");
-writematrix("minMaxSpeed [m/s]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
+writematrix("acceleration [m/s^2]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "H1");
 writematrix("momementTime [s]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "I1");
 writematrix("pathLengthRatio [.]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "J1");
 writematrix("maxSpeed [m/s]", fullfile(basePath_dirs, append(filename, ext)), 'Sheet', 1, 'Range', "K1");
