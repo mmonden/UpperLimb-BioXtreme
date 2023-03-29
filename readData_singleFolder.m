@@ -2,7 +2,7 @@ clear all
 format long e
 
 basePath = uigetdir;
-save_dir = basePath_dirs; %uigetdir;
+save_dir = basePath; %uigetdir;
 
 atEnd = false;
 filenamesDone = {};
